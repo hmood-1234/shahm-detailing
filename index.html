@@ -1,0 +1,121 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>شهم للتلميع</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#101318;color:#fff;font-family:Arial,sans-serif}
+header{background:#191e26;padding:20px;text-align:center;border-bottom:3px solid #e5b52e}
+header h1{margin:0;color:#f2c344}
+header p{margin:8px 0 0;color:#bbb}
+main{padding:16px;max-width:900px;margin:auto}
+h2{color:#f2c344}
+.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.card{background:#202630;padding:20px;border-radius:12px;border:1px solid #343c48}
+.card strong{display:block;font-size:24px;color:#f2c344;margin-top:10px}
+nav{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:20px 0}
+button{background:#e5b52e;color:#151515;border:0;padding:14px;border-radius:9px;font-weight:bold;font-size:16px}
+button.secondary{background:#29313d;color:white}
+section.panel{background:#202630;padding:18px;border-radius:12px;margin-top:16px}
+input,select{width:100%;padding:13px;margin:7px 0 14px;border-radius:8px;border:1px solid #555;background:#111720;color:white;font-size:16px}
+label{color:#ddd}
+.hidden{display:none}
+.note{color:#aaa;font-size:13px;line-height:1.7}
+</style>
+</head>
+<body>
+<header>
+<h1>شهم للتلميع</h1>
+<p>نظام إدارة محل تلميع السيارات</p>
+</header>
+<main>
+<h2>لوحة التحكم</h2>
+<div class="cards">
+<div class="card">عدد السيارات<strong id="cars">0</strong></div>
+<div class="card">عدد الفواتير<strong id="bills">0</strong></div>
+<div class="card">إجمالي المبيعات<strong id="sales">0.000 ر.ع</strong></div>
+<div class="card">المصروفات<strong id="expenses">0.000 ر.ع</strong></div>
+</div>
+
+<nav>
+<button onclick="show('carPanel')">＋ تسجيل سيارة</button>
+<button onclick="show('invoicePanel')">إصدار فاتورة</button>
+<button class="secondary" onclick="show('servicesPanel')">الخدمات والأسعار</button>
+<button class="secondary" onclick="show('stockPanel')">المخزون</button>
+<button class="secondary" onclick="show('expensesPanel')">المصروفات</button>
+<button class="secondary" onclick="show('reportsPanel')">التقارير</button>
+</nav>
+
+<section id="carPanel" class="panel hidden">
+<h2>تسجيل سيارة</h2>
+<label>اسم العميل</label><input id="customer" placeholder="اسم العميل">
+<label>رقم الهاتف</label><input id="phone" placeholder="رقم الهاتف">
+<label>نوع السيارة</label><input id="carType" placeholder="مثال: لكزس">
+<label>رقم اللوحة</label><input id="plate" placeholder="رقم السيارة">
+<button onclick="addCar()">حفظ السيارة</button>
+</section>
+
+<section id="invoicePanel" class="panel hidden">
+<h2>إصدار فاتورة</h2>
+<label>اسم العميل</label><input id="invoiceCustomer" placeholder="اسم العميل">
+<label>الخدمة</label>
+<select id="service">
+<option>تلميع خارجي</option>
+<option>تلميع داخلي</option>
+<option>نانو سيراميك</option>
+<option>حماية PPF</option>
+<option>تضليل</option>
+</select>
+<label>المبلغ بالريال العماني</label><input id="amount" type="number" step="0.001" placeholder="0.000">
+<button onclick="addInvoice()">حفظ الفاتورة</button>
+</section>
+
+<section id="servicesPanel" class="panel hidden">
+<h2>الخدمات والأسعار</h2>
+<p>إدارة الخدمات والأسعار ستُربط بقاعدة البيانات في الخطوة التالية.</p>
+</section>
+<section id="stockPanel" class="panel hidden">
+<h2>المخزون</h2>
+<p>متابعة المواد والكميات والمشتريات.</p>
+</section>
+<section id="expensesPanel" class="panel hidden">
+<h2>المصروفات</h2>
+<p>تسجيل مصروفات المحل ومتابعتها.</p>
+</section>
+<section id="reportsPanel" class="panel hidden">
+<h2>التقارير</h2>
+<p>تقارير المبيعات والأرباح والمصروفات.</p>
+</section>
+<p class="note">نسخة أولية للواجهة فقط. لم يتم ربطها بعد بقاعدة البيانات أو تفعيل صلاحيات الموظفين.</p>
+</main>
+
+<script>
+function show(id){
+document.querySelectorAll('section.panel').forEach(x=>x.classList.add('hidden'));
+document.getElementById(id).classList.remove('hidden');
+}
+let cars=0,bills=0,sales=0;
+function addCar(){
+if(!document.getElementById('customer').value.trim()){
+alert('اكتب اسم العميل');return;
+}
+cars++;
+document.getElementById('cars').textContent=cars;
+alert('تم تسجيل السيارة في هذه النسخة التجريبية');
+}
+function addInvoice(){
+let amount=Number(document.getElementById('amount').value);
+if(!document.getElementById('invoiceCustomer').value.trim()||amount<=0){
+alert('أدخل اسم العميل والمبلغ الصحيح');return;
+}
+bills++;sales+=amount;
+document.getElementById('bills').textContent=bills;
+document.getElementById('sales').textContent=sales.toFixed(3)+' ر.ع';
+alert('تم تسجيل الفاتورة في هذه النسخة التجريبية');
+}
+</script>
+</body>
+</html>

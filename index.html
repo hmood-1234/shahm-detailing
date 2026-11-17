@@ -82,7 +82,7 @@ function printInvoice(invoiceId){
   .actions{text-align:center;margin:20px auto}.actions button{background:#20242a;color:white;border:0;padding:12px 24px;border-radius:8px;font-size:16px}
   @media print{body{padding:0}.sheet{border:0;border-radius:0}.actions{display:none}}
   </style></head><body><div class="sheet">
-  <header><div><h1>شهم للتلميع</h1><div class="tag">فاتورة خدمات العناية بالسيارات</div></div><div><strong>فاتورة رقم: ${esc(inv.invoice_number)}</strong><div class="tag">${esc(date)}</div></div></header>
+  <header><div><h1>شهم الرائدة للتطوير</h1><div class="tag">تلميع وغسيل وخدمات العناية بالمركبات</div><div class="tag">هاتف: 99810190 | السجل التجاري: 1562390</div><div class="tag">ولاية صور – سلطنة عُمان</div></div><div><strong>فاتورة رقم: ${esc(inv.invoice_number)}</strong><div class="tag">${esc(date)}</div></div></header>
   <h2>تفاصيل العميل</h2><div class="meta"><div><span class="label">اسم العميل</span>${esc(customer.name||"—")}</div><div><span class="label">رقم الهاتف</span>${esc(customer.phone||"—")}</div><div><span class="label">السيارة</span>${esc(carName)}</div><div><span class="label">طريقة الدفع</span>${esc(inv.payment_method||"—")}</div></div>
   <h2>الخدمات</h2><table><thead><tr><th>الخدمة</th><th>الكمية</th><th>سعر الوحدة (ر.ع)</th><th>الإجمالي (ر.ع)</th></tr></thead><tbody>${rows||'<tr><td colspan="4">لا توجد تفاصيل خدمات مسجلة</td></tr>'}</tbody></table>
   <div class="total">الإجمالي: ${fmt(inv.total)} ر.ع</div>

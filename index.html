@@ -1,7 +1,7 @@
 <!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>شهم للتلميع</title><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><style>
 *{box-sizing:border-box}body{margin:0;background:#101317;color:#f5f5f5;font:16px Arial,Tahoma}header{padding:16px;background:#191f25;color:#e0b84f;font-size:23px;font-weight:bold;display:flex;justify-content:space-between;align-items:center}main{max-width:1000px;margin:auto;padding:15px}.card{background:#1a2027;border:1px solid #303943;border-radius:13px;padding:15px;margin:12px 0}.hidden{display:none!important}input,select,textarea,button{font:inherit;border-radius:9px;padding:12px;margin:5px 0;width:100%}input,select,textarea{background:#10161c;border:1px solid #39434d;color:white}button{background:#e0b84f;border:0;color:#171717;font-weight:bold}button.alt,nav button{background:#27313b;color:white;border:1px solid #39434d}nav{display:flex;gap:7px;overflow:auto;margin:12px 0}nav button{min-width:fit-content;width:auto}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}.stat{background:#202830;padding:14px;border-radius:10px}.stat b{display:block;color:#e0b84f;font-size:22px;margin-top:8px}.section{display:none}.section.active{display:block}.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}.table{overflow:auto}table{border-collapse:collapse;width:100%;min-width:480px}td,th{padding:10px;border-bottom:1px solid #39434d;text-align:right}th{color:#e0b84f}.muted{color:#abb4be;font-size:13px}.msg{color:#a6e5b8}.err{color:#ff9999}.total{color:#e0b84f;font-size:22px;font-weight:bold}
 </style></head><body><header><span>شهم للتلميع</span><button id="out" class="alt hidden" style="width:auto">خروج</button></header><main>
-<div id="login" class="card"><h2>تسجيل الدخول</h2><input id="email" type="email" placeholder="البريد الإلكتروني"><input id="pass" type="password" placeholder="كلمة المرور"><button id="loginBtn">دخول</button><p id="loginMsg" class="muted"></p></div>
+<div id="login" class="card"><h2>تسجيل الدخول</h2><input id="email" type="email" placeholder="البريد الإلكتروني"><input id="pass" type="password" placeholder="كلمة المرور"><button id="loginBtn" type="button" onclick="window.loginNow()">دخول</button><p id="loginMsg" class="muted"></p></div>
 <div id="app" class="hidden"><p id="who" class="muted"></p><p class="muted">العملة: ريال عماني (ر.ع)</p><nav id="nav"><button data-tab="home">الرئيسية</button><button data-tab="clients">العملاء والسيارات</button><button data-tab="bills">الفواتير</button><button data-tab="services">الخدمات</button><button data-tab="stock">المخزون</button><button data-tab="expenses">المصروفات</button></nav>
 <section id="home" class="section active"><h2>لوحة التحكم</h2><div class="grid"><div class="stat">عدد العملاء<b id="nclients">0</b></div><div class="stat">الفواتير<b id="nbills">0</b></div><div class="stat">الإيرادات<b id="revenue">0.000</b></div><div class="stat">المصروفات<b id="costs">0.000</b></div><div class="stat">الفرق<b id="profit">0.000</b></div></div></section>
 <section id="clients" class="section"><h2>إضافة عميل وسيارة</h2><div class="card"><div class="row"><input id="cn" placeholder="اسم العميل *"><input id="cp" placeholder="الهاتف"><input id="ct" placeholder="نوع السيارة"><input id="plate" placeholder="رقم اللوحة"><input id="make" placeholder="الشركة"><input id="model" placeholder="الموديل"><input id="color" placeholder="اللون"></div><textarea id="cnotes" placeholder="ملاحظات"></textarea><button id="saveClient">حفظ العميل والسيارة</button><p id="cm" class="muted"></p></div><div class="card table"><table><thead><tr><th>العميل</th><th>الهاتف</th><th>السيارة</th><th>اللوحة</th></tr></thead><tbody id="clientRows"></tbody></table></div></section>
@@ -12,7 +12,7 @@
 </div></main><script>
 const SUPABASE_URL="https://tnyclcjzkoiykaehvupc.supabase.co";
 const SUPABASE_KEY="sb_publishable_6jke1gUdgrmwkI_H5dnOnw_HkfogvNm";
-const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+let db;
 let user,profile,customers=[],vehicles=[],services=[],invoices=[],expenses=[];
 const $=x=>document.getElementById(x),fmt=x=>(+x||0).toFixed(3),safe=x=>String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function message(id,s,err=false){$(id).textContent=s;$(id).className=err?"err":"msg"}
@@ -31,7 +31,20 @@ async function load(){
  $("nclients").textContent=customers.length;$("nbills").textContent=invoices.length;$("revenue").textContent=fmt(rev);$("costs").textContent=fmt(exp);$("profit").textContent=fmt(rev-exp);
 }
 async function enter(u){user=u;let {data:p,error}=await db.from("profiles").select("*").eq("id",u.id).maybeSingle();if(error)throw error;if(!p)throw Error("لا يوجد ملف مستخدم في profiles لهذا الحساب.");profile=p;$("login").classList.add("hidden");$("app").classList.remove("hidden");$("out").classList.remove("hidden");$("who").textContent=p.full_name||u.email;await load()}
-$("loginBtn").onclick=async()=>{try{let {data,error}=await db.auth.signInWithPassword({email:$("email").value.trim(),password:$("pass").value});if(error)throw error;await enter(data.user)}catch(e){message("loginMsg",e.message,true)}};
+window.loginNow=async()=>{
+  message("loginMsg","جارٍ الاتصال...");
+  try {
+    if (!window.supabase || !window.supabase.createClient) throw Error("تعذر تحميل خدمة الدخول. حدّث الصفحة وجرب مرة أخرى.");
+    if (!db) db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+    const email=$("email").value.trim(), password=$("pass").value;
+    if(!email || !password) throw Error("أدخل البريد الإلكتروني وكلمة المرور.");
+    const {data,error}=await db.auth.signInWithPassword({email,password});
+    if(error) throw error;
+    if(!data.user) throw Error("لم يتم العثور على حساب مستخدم.");
+    message("loginMsg","تم تسجيل الدخول، جارٍ فتح النظام...");
+    await enter(data.user);
+  } catch(e) { message("loginMsg",e.message || "حدث خطأ غير معروف",true); }
+};
 $("out").onclick=async()=>{await db.auth.signOut();location.reload()};
 $("nav").onclick=e=>{let b=e.target.closest("[data-tab]");if(!b)return;document.querySelectorAll(".section").forEach(s=>s.classList.toggle("active",s.id===b.dataset.tab))};
 $("bc").onchange=()=>{$("bv").innerHTML='<option value="">اختر السيارة</option>'+vehicles.filter(v=>v.customer_id===$("bc").value).map(v=>`<option value="${v.id}">${safe(v.plate_number||"بدون لوحة")} ${safe(v.make)} ${safe(v.model)}</option>`).join("")};

@@ -1,121 +1,44 @@
-
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>شهم للتلميع</title>
-<style>
-*{box-sizing:border-box}
-body{margin:0;background:#101318;color:#fff;font-family:Arial,sans-serif}
-header{background:#191e26;padding:20px;text-align:center;border-bottom:3px solid #e5b52e}
-header h1{margin:0;color:#f2c344}
-header p{margin:8px 0 0;color:#bbb}
-main{padding:16px;max-width:900px;margin:auto}
-h2{color:#f2c344}
-.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-.card{background:#202630;padding:20px;border-radius:12px;border:1px solid #343c48}
-.card strong{display:block;font-size:24px;color:#f2c344;margin-top:10px}
-nav{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin:20px 0}
-button{background:#e5b52e;color:#151515;border:0;padding:14px;border-radius:9px;font-weight:bold;font-size:16px}
-button.secondary{background:#29313d;color:white}
-section.panel{background:#202630;padding:18px;border-radius:12px;margin-top:16px}
-input,select{width:100%;padding:13px;margin:7px 0 14px;border-radius:8px;border:1px solid #555;background:#111720;color:white;font-size:16px}
-label{color:#ddd}
-.hidden{display:none}
-.note{color:#aaa;font-size:13px;line-height:1.7}
-</style>
-</head>
-<body>
-<header>
-<h1>شهم للتلميع</h1>
-<p>نظام إدارة محل تلميع السيارات</p>
-</header>
-<main>
-<h2>لوحة التحكم</h2>
-<div class="cards">
-<div class="card">عدد السيارات<strong id="cars">0</strong></div>
-<div class="card">عدد الفواتير<strong id="bills">0</strong></div>
-<div class="card">إجمالي المبيعات<strong id="sales">0.000 ر.ع</strong></div>
-<div class="card">المصروفات<strong id="expenses">0.000 ر.ع</strong></div>
-</div>
-
-<nav>
-<button onclick="show('carPanel')">＋ تسجيل سيارة</button>
-<button onclick="show('invoicePanel')">إصدار فاتورة</button>
-<button class="secondary" onclick="show('servicesPanel')">الخدمات والأسعار</button>
-<button class="secondary" onclick="show('stockPanel')">المخزون</button>
-<button class="secondary" onclick="show('expensesPanel')">المصروفات</button>
-<button class="secondary" onclick="show('reportsPanel')">التقارير</button>
-</nav>
-
-<section id="carPanel" class="panel hidden">
-<h2>تسجيل سيارة</h2>
-<label>اسم العميل</label><input id="customer" placeholder="اسم العميل">
-<label>رقم الهاتف</label><input id="phone" placeholder="رقم الهاتف">
-<label>نوع السيارة</label><input id="carType" placeholder="مثال: لكزس">
-<label>رقم اللوحة</label><input id="plate" placeholder="رقم السيارة">
-<button onclick="addCar()">حفظ السيارة</button>
-</section>
-
-<section id="invoicePanel" class="panel hidden">
-<h2>إصدار فاتورة</h2>
-<label>اسم العميل</label><input id="invoiceCustomer" placeholder="اسم العميل">
-<label>الخدمة</label>
-<select id="service">
-<option>تلميع خارجي</option>
-<option>تلميع داخلي</option>
-<option>نانو سيراميك</option>
-<option>حماية PPF</option>
-<option>تضليل</option>
-</select>
-<label>المبلغ بالريال العماني</label><input id="amount" type="number" step="0.001" placeholder="0.000">
-<button onclick="addInvoice()">حفظ الفاتورة</button>
-</section>
-
-<section id="servicesPanel" class="panel hidden">
-<h2>الخدمات والأسعار</h2>
-<p>إدارة الخدمات والأسعار ستُربط بقاعدة البيانات في الخطوة التالية.</p>
-</section>
-<section id="stockPanel" class="panel hidden">
-<h2>المخزون</h2>
-<p>متابعة المواد والكميات والمشتريات.</p>
-</section>
-<section id="expensesPanel" class="panel hidden">
-<h2>المصروفات</h2>
-<p>تسجيل مصروفات المحل ومتابعتها.</p>
-</section>
-<section id="reportsPanel" class="panel hidden">
-<h2>التقارير</h2>
-<p>تقارير المبيعات والأرباح والمصروفات.</p>
-</section>
-<p class="note">نسخة أولية للواجهة فقط. لم يتم ربطها بعد بقاعدة البيانات أو تفعيل صلاحيات الموظفين.</p>
-</main>
-
-<script>
-function show(id){
-document.querySelectorAll('section.panel').forEach(x=>x.classList.add('hidden'));
-document.getElementById(id).classList.remove('hidden');
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>شهم للتلميع</title><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><style>
+*{box-sizing:border-box}body{margin:0;background:#101317;color:#f5f5f5;font:16px Arial,Tahoma}header{padding:16px;background:#191f25;color:#e0b84f;font-size:23px;font-weight:bold;display:flex;justify-content:space-between;align-items:center}main{max-width:1000px;margin:auto;padding:15px}.card{background:#1a2027;border:1px solid #303943;border-radius:13px;padding:15px;margin:12px 0}.hidden{display:none!important}input,select,textarea,button{font:inherit;border-radius:9px;padding:12px;margin:5px 0;width:100%}input,select,textarea{background:#10161c;border:1px solid #39434d;color:white}button{background:#e0b84f;border:0;color:#171717;font-weight:bold}button.alt,nav button{background:#27313b;color:white;border:1px solid #39434d}nav{display:flex;gap:7px;overflow:auto;margin:12px 0}nav button{min-width:fit-content;width:auto}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}.stat{background:#202830;padding:14px;border-radius:10px}.stat b{display:block;color:#e0b84f;font-size:22px;margin-top:8px}.section{display:none}.section.active{display:block}.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}.table{overflow:auto}table{border-collapse:collapse;width:100%;min-width:480px}td,th{padding:10px;border-bottom:1px solid #39434d;text-align:right}th{color:#e0b84f}.muted{color:#abb4be;font-size:13px}.msg{color:#a6e5b8}.err{color:#ff9999}.total{color:#e0b84f;font-size:22px;font-weight:bold}
+</style></head><body><header><span>شهم للتلميع</span><button id="out" class="alt hidden" style="width:auto">خروج</button></header><main>
+<div id="login" class="card"><h2>تسجيل الدخول</h2><input id="email" type="email" placeholder="البريد الإلكتروني"><input id="pass" type="password" placeholder="كلمة المرور"><button id="loginBtn">دخول</button><p id="loginMsg" class="muted"></p></div>
+<div id="app" class="hidden"><p id="who" class="muted"></p><p class="muted">العملة: ريال عماني (ر.ع)</p><nav id="nav"><button data-tab="home">الرئيسية</button><button data-tab="clients">العملاء والسيارات</button><button data-tab="bills">الفواتير</button><button data-tab="services">الخدمات</button><button data-tab="stock">المخزون</button><button data-tab="expenses">المصروفات</button></nav>
+<section id="home" class="section active"><h2>لوحة التحكم</h2><div class="grid"><div class="stat">عدد العملاء<b id="nclients">0</b></div><div class="stat">الفواتير<b id="nbills">0</b></div><div class="stat">الإيرادات<b id="revenue">0.000</b></div><div class="stat">المصروفات<b id="costs">0.000</b></div><div class="stat">الفرق<b id="profit">0.000</b></div></div></section>
+<section id="clients" class="section"><h2>إضافة عميل وسيارة</h2><div class="card"><div class="row"><input id="cn" placeholder="اسم العميل *"><input id="cp" placeholder="الهاتف"><input id="ct" placeholder="نوع السيارة"><input id="plate" placeholder="رقم اللوحة"><input id="make" placeholder="الشركة"><input id="model" placeholder="الموديل"><input id="color" placeholder="اللون"></div><textarea id="cnotes" placeholder="ملاحظات"></textarea><button id="saveClient">حفظ العميل والسيارة</button><p id="cm" class="muted"></p></div><div class="card table"><table><thead><tr><th>العميل</th><th>الهاتف</th><th>السيارة</th><th>اللوحة</th></tr></thead><tbody id="clientRows"></tbody></table></div></section>
+<section id="bills" class="section"><h2>إنشاء فاتورة</h2><div class="card"><label>العميل</label><select id="bc"></select><label>السيارة</label><select id="bv"></select><label>الخدمة</label><select id="bs"></select><div class="row"><input id="qty" type="number" min="1" value="1" placeholder="الكمية"><input id="price" type="number" min="0" step=".001" placeholder="السعر"></div><select id="pay"><option value="cash">نقدًا</option><option value="card">بطاقة</option><option value="transfer">تحويل</option></select><textarea id="bnotes" placeholder="ملاحظات"></textarea><p>الإجمالي: <span id="total" class="total">0.000 ر.ع</span></p><button id="saveBill">حفظ الفاتورة</button><p id="bm" class="muted"></p></div><div class="card table"><table><thead><tr><th>رقم</th><th>العميل</th><th>التاريخ</th><th>الإجمالي</th></tr></thead><tbody id="billRows"></tbody></table></div></section>
+<section id="services" class="section"><h2>الخدمات</h2><div class="card"><input id="sn" placeholder="اسم الخدمة"><input id="sp" type="number" step=".001" placeholder="السعر"><input id="sd" placeholder="الوصف"><button id="saveService">إضافة خدمة</button><p id="sm" class="muted"></p></div><div class="card table"><table><thead><tr><th>الخدمة</th><th>السعر</th><th>الوصف</th></tr></thead><tbody id="serviceRows"></tbody></table></div></section>
+<section id="stock" class="section"><h2>المخزون</h2><div class="card"><input id="pn" placeholder="اسم المنتج"><div class="row"><input id="pq" type="number" step=".01" placeholder="الكمية"><input id="pu" placeholder="الوحدة"></div><button id="saveStock">إضافة للمخزون</button><p id="pm" class="muted"></p></div><div class="card table"><table><thead><tr><th>المنتج</th><th>الكمية</th><th>الوحدة</th></tr></thead><tbody id="stockRows"></tbody></table></div></section>
+<section id="expenses" class="section"><h2>المصروفات</h2><div class="card"><input id="ed" placeholder="بيان المصروف"><div class="row"><input id="ea" type="number" step=".001" placeholder="المبلغ"><input id="ec" placeholder="التصنيف"><input id="date" type="date"></div><textarea id="en" placeholder="ملاحظات"></textarea><button id="saveExpense">حفظ المصروف</button><p id="em" class="muted"></p></div><div class="card table"><table><thead><tr><th>التاريخ</th><th>البيان</th><th>التصنيف</th><th>المبلغ</th></tr></thead><tbody id="expenseRows"></tbody></table></div></section>
+</div></main><script>
+const URL="https://tnyclcjzkoiykaehvupc.supabase.co",KEY="sb_publishable_6jke1gUdgrmwkI_H5dnOnw_HkfogvNm",db=supabase.createClient(URL,KEY);
+let user,profile,customers=[],vehicles=[],services=[],invoices=[],expenses=[];
+const $=x=>document.getElementById(x),fmt=x=>(+x||0).toFixed(3),safe=x=>String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function message(id,s,err=false){$(id).textContent=s;$(id).className=err?"err":"msg"}
+async function load(){
+ let results=await Promise.all([db.from("customers").select("*").order("created_at",{ascending:false}),db.from("vehicles").select("*"),db.from("services").select("*").eq("active",true).order("name"),db.from("invoices").select("*,customers(name)").order("created_at",{ascending:false}).limit(100),db.from("expenses").select("*").order("created_at",{ascending:false}).limit(100),db.from("stock").select("*").order("product_name")]);
+ for(let r of results)if(r.error)throw Error(r.error.message);
+ [customers,vehicles,services,invoices,expenses,window.stock]=results.map(r=>r.data||[]);
+ $("clientRows").innerHTML=customers.map(c=>{let v=vehicles.find(x=>x.customer_id===c.id);return `<tr><td>${safe(c.name)}</td><td>${safe(c.phone)}</td><td>${safe(v?(v.make||"")+" "+(v.model||""):c.car_type)}</td><td>${safe(v?.plate_number||c.car_number)}</td></tr>`}).join("");
+ $("bc").innerHTML='<option value="">اختر العميل</option>'+customers.map(c=>`<option value="${c.id}">${safe(c.name)}</option>`).join("");
+ $("bs").innerHTML='<option value="">اختر الخدمة</option>'+services.map(s=>`<option value="${s.id}" data-price="${s.price}">${safe(s.name)} - ${fmt(s.price)}</option>`).join("");
+ $("serviceRows").innerHTML=services.map(s=>`<tr><td>${safe(s.name)}</td><td>${fmt(s.price)}</td><td>${safe(s.description)}</td></tr>`).join("");
+ $("billRows").innerHTML=invoices.map(i=>`<tr><td>${safe(i.invoice_number)}</td><td>${safe(i.customers?.name)}</td><td>${new Date(i.created_at).toLocaleDateString("ar-OM")}</td><td>${fmt(i.total)}</td></tr>`).join("");
+ $("expenseRows").innerHTML=expenses.map(e=>`<tr><td>${safe(e.expense_date)}</td><td>${safe(e.description)}</td><td>${safe(e.category)}</td><td>${fmt(e.amount)}</td></tr>`).join("");
+ $("stockRows").innerHTML=window.stock.map(s=>`<tr><td>${safe(s.product_name)}</td><td>${safe(s.quantity)}</td><td>${safe(s.unit)}</td></tr>`).join("");
+ let rev=invoices.reduce((a,x)=>a+(+x.total||0),0),exp=expenses.reduce((a,x)=>a+(+x.amount||0),0);
+ $("nclients").textContent=customers.length;$("nbills").textContent=invoices.length;$("revenue").textContent=fmt(rev);$("costs").textContent=fmt(exp);$("profit").textContent=fmt(rev-exp);
 }
-let cars=0,bills=0,sales=0;
-function addCar(){
-if(!document.getElementById('customer').value.trim()){
-alert('اكتب اسم العميل');return;
-}
-cars++;
-document.getElementById('cars').textContent=cars;
-alert('تم تسجيل السيارة في هذه النسخة التجريبية');
-}
-function addInvoice(){
-let amount=Number(document.getElementById('amount').value);
-if(!document.getElementById('invoiceCustomer').value.trim()||amount<=0){
-alert('أدخل اسم العميل والمبلغ الصحيح');return;
-}
-bills++;sales+=amount;
-document.getElementById('bills').textContent=bills;
-document.getElementById('sales').textContent=sales.toFixed(3)+' ر.ع';
-alert('تم تسجيل الفاتورة في هذه النسخة التجريبية');
-}
-</script>
-</body>
-</html>
+async function enter(u){user=u;let {data:p,error}=await db.from("profiles").select("*").eq("id",u.id).maybeSingle();if(error)throw error;if(!p)throw Error("لا يوجد ملف مستخدم في profiles لهذا الحساب.");profile=p;$("login").classList.add("hidden");$("app").classList.remove("hidden");$("out").classList.remove("hidden");$("who").textContent=p.full_name||u.email;await load()}
+$("loginBtn").onclick=async()=>{try{let {data,error}=await db.auth.signInWithPassword({email:$("email").value.trim(),password:$("pass").value});if(error)throw error;await enter(data.user)}catch(e){message("loginMsg",e.message,true)}};
+$("out").onclick=async()=>{await db.auth.signOut();location.reload()};
+$("nav").onclick=e=>{let b=e.target.closest("[data-tab]");if(!b)return;document.querySelectorAll(".section").forEach(s=>s.classList.toggle("active",s.id===b.dataset.tab))};
+$("bc").onchange=()=>{$("bv").innerHTML='<option value="">اختر السيارة</option>'+vehicles.filter(v=>v.customer_id===$("bc").value).map(v=>`<option value="${v.id}">${safe(v.plate_number||"بدون لوحة")} ${safe(v.make)} ${safe(v.model)}</option>`).join("")};
+$("bs").onchange=()=>{$("price").value=$("bs").selectedOptions[0]?.dataset.price||"";calc()};$("qty").oninput=$("price").oninput=calc;
+function calc(){$("total").textContent=fmt((+$("qty").value||0)*(+$("price").value||0))+" ر.ع"}
+$("saveClient").onclick=async()=>{try{let name=$("cn").value.trim();if(!name)throw Error("اكتب اسم العميل");let {data:c,error}=await db.from("customers").insert({name,phone:$("cp").value||null,car_type:$("ct").value||null,car_number:$("plate").value||null,notes:$("cnotes").value||null,created_by:user.id}).select().single();if(error)throw error;let plate=$("plate").value,make=$("make").value,model=$("model").value,color=$("color").value;if(plate||make||model||color){let {error:e}=await db.from("vehicles").insert({customer_id:c.id,plate_number:plate||null,make:make||null,model:model||null,color:color||null,created_by:user.id});if(e)throw e}message("cm","تم حفظ العميل والسيارة");await load()}catch(e){message("cm",e.message,true)}};
+$("saveService").onclick=async()=>{try{let {error}=await db.from("services").insert({name:$("sn").value.trim(),price:+$("sp").value,description:$("sd").value||null,active:true});if(error)throw error;message("sm","تمت إضافة الخدمة");await load()}catch(e){message("sm",e.message,true)}};
+$("saveStock").onclick=async()=>{try{let {error}=await db.from("stock").insert({product_name:$("pn").value.trim(),quantity:+$("pq").value,unit:$("pu").value.trim(),updated_at:new Date().toISOString()});if(error)throw error;message("pm","تمت إضافة المنتج");await load()}catch(e){message("pm",e.message,true)}};
+$("saveExpense").onclick=async()=>{try{let {error}=await db.from("expenses").insert({description:$("ed").value.trim(),amount:+$("ea").value,category:$("ec").value||null,expense_date:$("date").value||null,notes:$("en").value||null});if(error)throw error;message("em","تم حفظ المصروف");await load()}catch(e){message("em",e.message,true)}};
+$("saveBill").onclick=async()=>{try{let service=services.find(s=>s.id===$("bs").value),customer=$("bc").value,qty=Math.max(1,+$("qty").value||1),price=+$("price").value;if(!customer||!service)throw Error("اختر العميل والخدمة");let total=qty*price;let {data:i,error}=await db.from("invoices").insert({customer_id:customer,vehicle_id:$("bv").value||null,total,payment_method:$("pay").value,status:"paid",notes:$("bnotes").value||null,created_by:user.id}).select().single();if(error)throw error;let {error:e}=await db.from("invoice_items").insert({invoice_id:i.id,service_id:service.id,description:service.name,quantity:qty,unit_price:price});if(e)throw e;message("bm","تم حفظ الفاتورة رقم "+i.invoice_number);await load()}catch(e){message("bm",e.message,true)}};
+db.auth.getSession().then(async({data})=>{if(data.session)try{await enter(data.session.user)}catch(e){alert(e.message)}});
+</script></body></html>

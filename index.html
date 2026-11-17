@@ -24,7 +24,7 @@ async function load(){
  $("bc").innerHTML='<option value="">اختر العميل</option>'+customers.map(c=>`<option value="${c.id}">${safe(c.name)}</option>`).join("");
  $("bs").innerHTML='<option value="">اختر الخدمة</option>'+services.map(s=>`<option value="${s.id}" data-price="${s.price}">${safe(s.name)} - ${fmt(s.price)}</option>`).join("");
  $("serviceRows").innerHTML=services.map(s=>`<tr><td>${safe(s.name)}</td><td>${fmt(s.price)}</td><td>${safe(s.description)}</td></tr>`).join("");
- $("billRows").innerHTML=invoices.map(i=>`<tr><td>${safe(i.invoice_number)}</td><td>${safe(i.customers?.name)}</td><td>${new Date(i.created_at).toLocaleDateString("ar-OM")}</td><td>${fmt(i.total)}</td><td><button class="alt" style="width:auto;white-space:nowrap" onclick="sendInvoiceWhatsApp('${i.id}')">واتساب</button></td></tr>`).join("");
+ $("billRows").innerHTML=invoices.map(i=>`<tr><td>${safe(i.invoice_number)}</td><td>${safe(i.customers?.name)}</td><td>${new Date(i.created_at).toLocaleDateString("ar-OM")}</td><td>${fmt(i.total)}</td><td><button class="alt" style="width:auto;white-space:nowrap" onclick="sendInvoiceWhatsApp('${i.id}')">واتساب</button> <button class="alt" style="width:auto;white-space:nowrap" onclick="printInvoice('${i.id}')">PDF</button></td></tr>`).join("");
  $("expenseRows").innerHTML=expenses.map(e=>`<tr><td>${safe(e.expense_date)}</td><td>${safe(e.description)}</td><td>${safe(e.category)}</td><td>${fmt(e.amount)}</td></tr>`).join("");
  $("stockRows").innerHTML=window.stock.map(s=>`<tr><td>${safe(s.product_name)}</td><td>${safe(s.quantity)}</td><td>${safe(s.unit)}</td></tr>`).join("");
  let rev=invoices.reduce((a,x)=>a+(+x.total||0),0),exp=expenses.reduce((a,x)=>a+(+x.amount||0),0);
@@ -54,6 +54,43 @@ $("saveClient").onclick=async()=>{try{let name=$("cn").value.trim();if(!name)thr
 $("saveService").onclick=async()=>{try{let {error}=await db.from("services").insert({name:$("sn").value.trim(),price:+$("sp").value,description:$("sd").value||null,active:true});if(error)throw error;message("sm","تمت إضافة الخدمة");await load()}catch(e){message("sm",e.message,true)}};
 $("saveStock").onclick=async()=>{try{let {error}=await db.from("stock").insert({product_name:$("pn").value.trim(),quantity:+$("pq").value,unit:$("pu").value.trim(),updated_at:new Date().toISOString()});if(error)throw error;message("pm","تمت إضافة المنتج");await load()}catch(e){message("pm",e.message,true)}};
 $("saveExpense").onclick=async()=>{try{let {error}=await db.from("expenses").insert({description:$("ed").value.trim(),amount:+$("ea").value,category:$("ec").value||null,expense_date:$("date").value||null,notes:$("en").value||null});if(error)throw error;message("em","تم حفظ المصروف");await load()}catch(e){message("em",e.message,true)}};
+
+
+function printInvoice(invoiceId){
+  const inv=invoices.find(x=>x.id===invoiceId);
+  if(!inv){alert("تعذر العثور على الفاتورة");return}
+  const customer=inv.customers||{};
+  const car=vehicles.find(v=>v.id===inv.vehicle_id);
+  const items=invoiceItems.filter(x=>x.invoice_id===inv.id);
+  const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  const rows=items.map(x=>`<tr><td>${esc(x.description||"خدمة")}</td><td>${esc(x.quantity)}</td><td>${fmt(x.unit_price)}</td><td>${fmt((Number(x.quantity)||0)*(Number(x.unit_price)||0))}</td></tr>`).join("");
+  const carName=car?[car.make,car.model,car.plate_number].filter(Boolean).join(" / "):"—";
+  const date=new Date(inv.created_at).toLocaleDateString("ar-OM");
+  const w=window.open("","_blank");
+  if(!w){alert("اسمح بفتح النوافذ المنبثقة للموقع ثم جرّب مرة أخرى.");return}
+  w.document.open();
+  w.document.write(`<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>فاتورة ${esc(inv.invoice_number)}</title><style>
+  *{box-sizing:border-box}body{font-family:Arial,Tahoma,sans-serif;color:#20242a;margin:0;padding:32px;background:#fff;direction:rtl}
+  .sheet{max-width:760px;margin:auto;border:1px solid #ddd;padding:32px;border-radius:12px}
+  header{display:flex;justify-content:space-between;align-items:center;border-bottom:3px solid #d9b64d;padding-bottom:18px;margin-bottom:24px}
+  h1{margin:0;color:#9b7921;font-size:28px}.tag{font-size:13px;color:#666;margin-top:8px}
+  h2{font-size:22px;margin:20px 0}.meta{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:18px 0}
+  .meta div{background:#f5f6f7;padding:12px;border-radius:8px}.label{font-size:12px;color:#666;display:block;margin-bottom:6px}
+  table{width:100%;border-collapse:collapse;margin-top:22px}th,td{padding:13px 10px;border-bottom:1px solid #ddd;text-align:right}
+  th{background:#f1f1f1}.total{margin-top:24px;text-align:left;font-size:23px;font-weight:bold;color:#9b7921}
+  footer{margin-top:50px;border-top:1px solid #ddd;padding-top:14px;color:#666;text-align:center;font-size:13px}
+  .actions{text-align:center;margin:20px auto}.actions button{background:#20242a;color:white;border:0;padding:12px 24px;border-radius:8px;font-size:16px}
+  @media print{body{padding:0}.sheet{border:0;border-radius:0}.actions{display:none}}
+  </style></head><body><div class="sheet">
+  <header><div><h1>شهم للتلميع</h1><div class="tag">فاتورة خدمات العناية بالسيارات</div></div><div><strong>فاتورة رقم: ${esc(inv.invoice_number)}</strong><div class="tag">${esc(date)}</div></div></header>
+  <h2>تفاصيل العميل</h2><div class="meta"><div><span class="label">اسم العميل</span>${esc(customer.name||"—")}</div><div><span class="label">رقم الهاتف</span>${esc(customer.phone||"—")}</div><div><span class="label">السيارة</span>${esc(carName)}</div><div><span class="label">طريقة الدفع</span>${esc(inv.payment_method||"—")}</div></div>
+  <h2>الخدمات</h2><table><thead><tr><th>الخدمة</th><th>الكمية</th><th>سعر الوحدة (ر.ع)</th><th>الإجمالي (ر.ع)</th></tr></thead><tbody>${rows||'<tr><td colspan="4">لا توجد تفاصيل خدمات مسجلة</td></tr>'}</tbody></table>
+  <div class="total">الإجمالي: ${fmt(inv.total)} ر.ع</div>
+  ${inv.notes?`<p><strong>ملاحظات:</strong> ${esc(inv.notes)}</p>`:""}
+  <footer>شكراً لثقتكم بشهم للتلميع</footer></div><div class="actions"><button onclick="window.print()">طباعة / حفظ PDF</button></div>
+  <script>window.onload=()=>{setTimeout(()=>window.print(),400)}<\/script></body></html>`);
+  w.document.close();
+}
 
 function sendInvoiceWhatsApp(invoiceId){
   const inv=invoices.find(x=>x.id===invoiceId);

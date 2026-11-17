@@ -10,7 +10,9 @@
 <section id="stock" class="section"><h2>المخزون</h2><div class="card"><input id="pn" placeholder="اسم المنتج"><div class="row"><input id="pq" type="number" step=".01" placeholder="الكمية"><input id="pu" placeholder="الوحدة"></div><button id="saveStock">إضافة للمخزون</button><p id="pm" class="muted"></p></div><div class="card table"><table><thead><tr><th>المنتج</th><th>الكمية</th><th>الوحدة</th></tr></thead><tbody id="stockRows"></tbody></table></div></section>
 <section id="expenses" class="section"><h2>المصروفات</h2><div class="card"><input id="ed" placeholder="بيان المصروف"><div class="row"><input id="ea" type="number" step=".001" placeholder="المبلغ"><input id="ec" placeholder="التصنيف"><input id="date" type="date"></div><textarea id="en" placeholder="ملاحظات"></textarea><button id="saveExpense">حفظ المصروف</button><p id="em" class="muted"></p></div><div class="card table"><table><thead><tr><th>التاريخ</th><th>البيان</th><th>التصنيف</th><th>المبلغ</th></tr></thead><tbody id="expenseRows"></tbody></table></div></section>
 </div></main><script>
-const URL="https://tnyclcjzkoiykaehvupc.supabase.co",KEY="sb_publishable_6jke1gUdgrmwkI_H5dnOnw_HkfogvNm",db=supabase.createClient(URL,KEY);
+const SUPABASE_URL="https://tnyclcjzkoiykaehvupc.supabase.co";
+const SUPABASE_KEY="sb_publishable_6jke1gUdgrmwkI_H5dnOnw_HkfogvNm";
+const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
 let user,profile,customers=[],vehicles=[],services=[],invoices=[],expenses=[];
 const $=x=>document.getElementById(x),fmt=x=>(+x||0).toFixed(3),safe=x=>String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function message(id,s,err=false){$(id).textContent=s;$(id).className=err?"err":"msg"}

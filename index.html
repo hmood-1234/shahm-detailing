@@ -5,7 +5,7 @@
 <div id="app" class="hidden"><p id="who" class="muted"></p><p class="muted">العملة: ريال عماني (ر.ع)</p><nav id="nav"><button data-tab="home">الرئيسية</button><button data-tab="clients">العملاء والسيارات</button><button data-tab="bills">الفواتير</button><button data-tab="services">الخدمات</button><button data-tab="stock">المخزون</button><button data-tab="expenses">المصروفات</button></nav>
 <section id="home" class="section active"><h2>لوحة التحكم</h2><div class="grid"><div class="stat">عدد العملاء<b id="nclients">0</b></div><div class="stat">الفواتير<b id="nbills">0</b></div><div class="stat">الإيرادات<b id="revenue">0.000</b></div><div class="stat">المصروفات<b id="costs">0.000</b></div><div class="stat">الفرق<b id="profit">0.000</b></div></div></section>
 <section id="clients" class="section"><h2>إضافة عميل وسيارة</h2><div class="card"><div class="row"><input id="cn" placeholder="اسم العميل *"><input id="cp" placeholder="الهاتف"><input id="ct" placeholder="نوع السيارة"><input id="plate" placeholder="رقم اللوحة"><input id="make" placeholder="الشركة"><input id="model" placeholder="الموديل"><input id="color" placeholder="اللون"></div><textarea id="cnotes" placeholder="ملاحظات"></textarea><button id="saveClient">حفظ العميل والسيارة</button><p id="cm" class="muted"></p></div><div class="card table"><table><thead><tr><th>العميل</th><th>الهاتف</th><th>السيارة</th><th>اللوحة</th></tr></thead><tbody id="clientRows"></tbody></table></div></section>
-<section id="bills" class="section"><h2>إنشاء فاتورة</h2><div class="card"><label>العميل</label><select id="bc"></select><label>السيارة</label><select id="bv"></select><label>الخدمة</label><select id="bs"></select><div class="row"><input id="qty" type="number" min="1" value="1" placeholder="الكمية"><input id="price" type="number" min="0" step=".001" placeholder="السعر"></div><select id="pay"><option value="cash">نقدًا</option><option value="card">بطاقة</option><option value="transfer">تحويل</option></select><textarea id="bnotes" placeholder="ملاحظات"></textarea><p>الإجمالي: <span id="total" class="total">0.000 ر.ع</span></p><button id="saveBill">حفظ الفاتورة</button><p id="bm" class="muted"></p></div><div class="card table"><table><thead><tr><th>رقم</th><th>العميل</th><th>التاريخ</th><th>الإجمالي</th></tr></thead><tbody id="billRows"></tbody></table></div></section>
+<section id="bills" class="section"><h2>إنشاء فاتورة</h2><div class="card"><label>العميل</label><select id="bc"></select><label>السيارة</label><select id="bv"></select><label>الخدمة</label><select id="bs"></select><div class="row"><input id="qty" type="number" min="1" value="1" placeholder="الكمية"><input id="price" type="number" min="0" step=".001" placeholder="السعر"></div><select id="pay"><option value="cash">نقدًا</option><option value="card">بطاقة</option><option value="transfer">تحويل</option></select><textarea id="bnotes" placeholder="ملاحظات"></textarea><p>الإجمالي: <span id="total" class="total">0.000 ر.ع</span></p><button id="saveBill">حفظ الفاتورة</button><p id="bm" class="muted"></p></div><div class="card table"><table><thead><tr><th>رقم</th><th>العميل</th><th>التاريخ</th><th>الإجمالي</th><th>إرسال</th></tr></thead><tbody id="billRows"></tbody></table></div></section>
 <section id="services" class="section"><h2>الخدمات</h2><div class="card"><input id="sn" placeholder="اسم الخدمة"><input id="sp" type="number" step=".001" placeholder="السعر"><input id="sd" placeholder="الوصف"><button id="saveService">إضافة خدمة</button><p id="sm" class="muted"></p></div><div class="card table"><table><thead><tr><th>الخدمة</th><th>السعر</th><th>الوصف</th></tr></thead><tbody id="serviceRows"></tbody></table></div></section>
 <section id="stock" class="section"><h2>المخزون</h2><div class="card"><input id="pn" placeholder="اسم المنتج"><div class="row"><input id="pq" type="number" step=".01" placeholder="الكمية"><input id="pu" placeholder="الوحدة"></div><button id="saveStock">إضافة للمخزون</button><p id="pm" class="muted"></p></div><div class="card table"><table><thead><tr><th>المنتج</th><th>الكمية</th><th>الوحدة</th></tr></thead><tbody id="stockRows"></tbody></table></div></section>
 <section id="expenses" class="section"><h2>المصروفات</h2><div class="card"><input id="ed" placeholder="بيان المصروف"><div class="row"><input id="ea" type="number" step=".001" placeholder="المبلغ"><input id="ec" placeholder="التصنيف"><input id="date" type="date"></div><textarea id="en" placeholder="ملاحظات"></textarea><button id="saveExpense">حفظ المصروف</button><p id="em" class="muted"></p></div><div class="card table"><table><thead><tr><th>التاريخ</th><th>البيان</th><th>التصنيف</th><th>المبلغ</th></tr></thead><tbody id="expenseRows"></tbody></table></div></section>
@@ -13,18 +13,18 @@
 const SUPABASE_URL="https://tnyclcjzkoiykaehvupc.supabase.co";
 const SUPABASE_KEY="sb_publishable_6jke1gUdgrmwkI_H5dnOnw_HkfogvNm";
 let db;
-let user,profile,customers=[],vehicles=[],services=[],invoices=[],expenses=[];
+let user,profile,customers=[],vehicles=[],services=[],invoices=[],expenses=[],invoiceItems=[];
 const $=x=>document.getElementById(x),fmt=x=>(+x||0).toFixed(3),safe=x=>String(x??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function message(id,s,err=false){$(id).textContent=s;$(id).className=err?"err":"msg"}
 async function load(){
- let results=await Promise.all([db.from("customers").select("*").order("created_at",{ascending:false}),db.from("vehicles").select("*"),db.from("services").select("*").eq("active",true).order("name"),db.from("invoices").select("*,customers(name)").order("created_at",{ascending:false}).limit(100),db.from("expenses").select("*").order("created_at",{ascending:false}).limit(100),db.from("stock").select("*").order("product_name")]);
+ let results=await Promise.all([db.from("customers").select("*").order("created_at",{ascending:false}),db.from("vehicles").select("*"),db.from("services").select("*").eq("active",true).order("name"),db.from("invoices").select("*,customers(name,phone)").order("created_at",{ascending:false}).limit(100),db.from("expenses").select("*").order("created_at",{ascending:false}).limit(100),db.from("stock").select("*").order("product_name"),db.from("invoice_items").select("*")]);
  for(let r of results)if(r.error)throw Error(r.error.message);
- [customers,vehicles,services,invoices,expenses,window.stock]=results.map(r=>r.data||[]);
+ [customers,vehicles,services,invoices,expenses,window.stock,invoiceItems]=results.map(r=>r.data||[]);
  $("clientRows").innerHTML=customers.map(c=>{let v=vehicles.find(x=>x.customer_id===c.id);return `<tr><td>${safe(c.name)}</td><td>${safe(c.phone)}</td><td>${safe(v?(v.make||"")+" "+(v.model||""):c.car_type)}</td><td>${safe(v?.plate_number||c.car_number)}</td></tr>`}).join("");
  $("bc").innerHTML='<option value="">اختر العميل</option>'+customers.map(c=>`<option value="${c.id}">${safe(c.name)}</option>`).join("");
  $("bs").innerHTML='<option value="">اختر الخدمة</option>'+services.map(s=>`<option value="${s.id}" data-price="${s.price}">${safe(s.name)} - ${fmt(s.price)}</option>`).join("");
  $("serviceRows").innerHTML=services.map(s=>`<tr><td>${safe(s.name)}</td><td>${fmt(s.price)}</td><td>${safe(s.description)}</td></tr>`).join("");
- $("billRows").innerHTML=invoices.map(i=>`<tr><td>${safe(i.invoice_number)}</td><td>${safe(i.customers?.name)}</td><td>${new Date(i.created_at).toLocaleDateString("ar-OM")}</td><td>${fmt(i.total)}</td></tr>`).join("");
+ $("billRows").innerHTML=invoices.map(i=>`<tr><td>${safe(i.invoice_number)}</td><td>${safe(i.customers?.name)}</td><td>${new Date(i.created_at).toLocaleDateString("ar-OM")}</td><td>${fmt(i.total)}</td><td><button class="alt" style="width:auto;white-space:nowrap" onclick="sendInvoiceWhatsApp('${i.id}')">واتساب</button></td></tr>`).join("");
  $("expenseRows").innerHTML=expenses.map(e=>`<tr><td>${safe(e.expense_date)}</td><td>${safe(e.description)}</td><td>${safe(e.category)}</td><td>${fmt(e.amount)}</td></tr>`).join("");
  $("stockRows").innerHTML=window.stock.map(s=>`<tr><td>${safe(s.product_name)}</td><td>${safe(s.quantity)}</td><td>${safe(s.unit)}</td></tr>`).join("");
  let rev=invoices.reduce((a,x)=>a+(+x.total||0),0),exp=expenses.reduce((a,x)=>a+(+x.amount||0),0);
@@ -54,6 +54,33 @@ $("saveClient").onclick=async()=>{try{let name=$("cn").value.trim();if(!name)thr
 $("saveService").onclick=async()=>{try{let {error}=await db.from("services").insert({name:$("sn").value.trim(),price:+$("sp").value,description:$("sd").value||null,active:true});if(error)throw error;message("sm","تمت إضافة الخدمة");await load()}catch(e){message("sm",e.message,true)}};
 $("saveStock").onclick=async()=>{try{let {error}=await db.from("stock").insert({product_name:$("pn").value.trim(),quantity:+$("pq").value,unit:$("pu").value.trim(),updated_at:new Date().toISOString()});if(error)throw error;message("pm","تمت إضافة المنتج");await load()}catch(e){message("pm",e.message,true)}};
 $("saveExpense").onclick=async()=>{try{let {error}=await db.from("expenses").insert({description:$("ed").value.trim(),amount:+$("ea").value,category:$("ec").value||null,expense_date:$("date").value||null,notes:$("en").value||null});if(error)throw error;message("em","تم حفظ المصروف");await load()}catch(e){message("em",e.message,true)}};
+
+function sendInvoiceWhatsApp(invoiceId){
+  const inv=invoices.find(x=>x.id===invoiceId);
+  if(!inv){alert("تعذر العثور على الفاتورة");return}
+  let phone=String(inv.customers?.phone||"").replace(/\D/g,"");
+  if(phone.startsWith("00")) phone=phone.slice(2);
+  if(phone.length===8) phone="968"+phone;
+  else if(phone.startsWith("0") && phone.length===9) phone="968"+phone.slice(1);
+  if(!phone){alert("لا يوجد رقم هاتف للعميل. أضف رقم الهاتف في بيانات العميل أولاً.");return}
+  const car=vehicles.find(v=>v.id===inv.vehicle_id);
+  const items=invoiceItems.filter(x=>x.invoice_id===inv.id);
+  const lines=items.map(x=>`• ${x.description||"خدمة"} — ${x.quantity} × ${fmt(x.unit_price)} ر.ع`).join("\n");
+  const text=[
+    "شهم للتلميع",
+    "فاتورة رقم: "+inv.invoice_number,
+    "العميل: "+(inv.customers?.name||""),
+    car ? "السيارة: "+[car.make,car.model,car.plate_number].filter(Boolean).join(" / ") : "",
+    "التاريخ: "+new Date(inv.created_at).toLocaleDateString("ar-OM"),
+    "الخدمات:",
+    lines||"تفاصيل الخدمة غير متوفرة",
+    "الإجمالي: "+fmt(inv.total)+" ريال عماني",
+    "شكراً لثقتكم بنا"
+  ].filter(Boolean).join("\n");
+  const url="https://wa.me/"+phone+"?text="+encodeURIComponent(text);
+  window.open(url,"_blank");
+}
+
 $("saveBill").onclick=async()=>{try{let service=services.find(s=>s.id===$("bs").value),customer=$("bc").value,qty=Math.max(1,+$("qty").value||1),price=+$("price").value;if(!customer||!service)throw Error("اختر العميل والخدمة");let total=qty*price;let {data:i,error}=await db.from("invoices").insert({customer_id:customer,vehicle_id:$("bv").value||null,total,payment_method:$("pay").value,status:"paid",notes:$("bnotes").value||null,created_by:user.id}).select().single();if(error)throw error;let {error:e}=await db.from("invoice_items").insert({invoice_id:i.id,service_id:service.id,description:service.name,quantity:qty,unit_price:price});if(e)throw e;message("bm","تم حفظ الفاتورة رقم "+i.invoice_number);await load()}catch(e){message("bm",e.message,true)}};
 db.auth.getSession().then(async({data})=>{if(data.session)try{await enter(data.session.user)}catch(e){alert(e.message)}});
 </script></body></html>
